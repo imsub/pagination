@@ -77,7 +77,7 @@ function App() {
             ) )    
           })
           : 
-          <tr><td colSpan="4"><i>Loading...</i></td></tr>
+          <tr></tr>
           }
         </tbody>
     </table>
