@@ -57,7 +57,7 @@ function App() {
         </tr>
         </thead>
         <tbody>
-          {data.pageData.length ? data.pageData.map( (val,i) => 
+          {data.pageData?.length ? data.pageData.map( (val,i) => 
           {
            return( (i == data.pageData.length - 1 )
             ?
