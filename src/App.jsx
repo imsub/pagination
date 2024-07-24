@@ -3,48 +3,46 @@ import getData from "./Api/api";
 import './App.css'
 
 function App() {
-  const [data, setData] = useState({data:[],pageData:[]});
+  const [data, setData] = useState([]);
   const [pgNo,setPgNo] = useState(1);
   useEffect(()=>{
     async function fetchData (){
       try{
         const result = await getData();
         localStorage.setItem('page',JSON.stringify(result));
-        setData({
-          pageData:result.splice(0,10)
-        })
+        setData(result.splice(0,10));
       }
       catch(error){
         alert('failed to fetch data');
+        localStorage.setItem('page',JSON.stringify([]));
       }
     }
     fetchData();
   },[]);
   const handler = (event)=>{
-    console.log(event.target.innerText);
     const btn = event.target.innerText;
-    const data = JSON.parse(localStorage.getItem('page'));
-    if((pgNo === 1 && btn === 'Previous') || (pgNo === Math.ceil(data.length/10) && btn === 'Next')){
+    const dataFrmLocal = JSON.parse(localStorage.getItem('page'));
+    if((pgNo === 1 && btn === 'Previous' && data.length) || (pgNo === Math.ceil(dataFrmLocal.length/10) && btn === 'Next' &&  data.length)){
       event.preventDefault();
     }
-    else if(btn === 'Next'){
+    else if(btn === 'Next' && dataFrmLocal.length){
         const newPgNo = pgNo+1;
-        setData({
-          pageData: data.slice((newPgNo*10)-10,newPgNo*10)
-        });
+        setData(
+          dataFrmLocal.slice((newPgNo*10)-10,newPgNo*10)
+        );
         setPgNo(newPgNo);
     }
-    else{
+    else if (btn === 'Previous' && dataFrmLocal.length){
       const newPgNo = pgNo-1;
-      setData({
-        pageData: data.slice((newPgNo*10)-10,newPgNo*10)
-      });
+      setData(
+        dataFrmLocal.slice((newPgNo*10)-10,newPgNo*10)
+      );
       setPgNo(newPgNo);
     }
 
   }
   return (
-    <div>
+    data.length ? <div>
       <h1>Employee Data Table</h1>
       <table id="myTable" style={{margin:'2rem',width:'90%'}}> 
       <thead style={{background:'#2c9b7f', color:'white',textAlign:'left'}}>
@@ -56,10 +54,8 @@ function App() {
         </tr>
         </thead>
         <tbody>
-          {data.pageData?.length ? data.pageData.map( (val,i) => 
-          {
-           return( (i == data.pageData.length - 1 )
-            ?
+          {data.map((val,i) => {
+           return( (i == data.length - 1 ) ?
             ( <tr key={val.id} >
               <td style={{borderBottom:'5px solid #2c9b7f'}}>{val.id}</td>
               <td style={{borderBottom:'5px solid #2c9b7f'}}>{val.name}</td>
@@ -75,8 +71,6 @@ function App() {
             </tr>
             ) )    
           })
-          : 
-          <tr></tr>
           }
         </tbody>
     </table>
@@ -84,7 +78,8 @@ function App() {
       <button onClick={handler}>Previous</button>{pgNo}
       <button onClick={handler}>Next</button>
       </div> 
-    </div>
+    </div> :
+  ''
   )
 }
 
