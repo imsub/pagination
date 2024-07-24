@@ -9,7 +9,6 @@ function App() {
     async function fetchData (){
       try{
         const result = await getData();
-        console.log(result.length,result);
         localStorage.setItem('page',JSON.stringify(result));
         setData({
           pageData:result.splice(0,10)
